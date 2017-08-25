@@ -3,10 +3,14 @@
 #Inital scan of file system
 
 $dirLoc = Read-Host -Prompt "Enter the file system location"
-
-Write-Host "Scanning, please wait..."
+$i = 1
 
 $files = Get-ChildItem $dirLoc -File -Recurse
+
+$files | ForEach-Object {
+    Write-Progress -Activity "Scanning file $($_.name)" -Status "File $i of $($files.Count)" -PercentComplete (($i / $files.Count) * 100)
+    $i++
+}
 
 #Date calculations
 
@@ -37,4 +41,4 @@ $check = ($totalFiles - ($dateWeek1 + $dateMonths + $date6months1 + $date6Months
 $check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files"}
 
 Write-Host "All done!"
-Start-Sleep -s 10
+Start-Sleep -s 100
