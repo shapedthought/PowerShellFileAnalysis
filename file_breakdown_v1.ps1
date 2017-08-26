@@ -13,32 +13,37 @@ $files | ForEach-Object {
     $i++
 }
 
-Write-Host "."
-Write-Host "."
-Write-Host "."
-Write-Host "."
-Write-Host "."
-Write-Host "."
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
 
 #Total used capacity
 
 $cap = ($files | Measure-Object -Sum length).sum / 1GB
 
 Write-Host "Total Used Capacity is" $cap "GB"
-Write-Host ".................."
+Write-Host ""
 
 #Largest file
 
-$largestFile = $files | Select-Object FullName | Sort length -Descending | select -first 1
+$largestFile = ($files | Sort length -Descending | Select-Object -first 1).FullName
 $largestFileCap = ($files | Select-Object length | Sort length -Descending | select -first 1).length / 1GB
-Write-Host "Largest file is" $largestFile "at" $largestFileCap "THIS IS INCORRECT AT THE MOMENT, WORKING ON IT"
-Write-Host ".................."
+Write-Host "Largest file is" $largestFile "at" $largestFileCap "GB"
+Write-Host ""
 
 #Average file size
 
-$averageFile = ($files | Measure-Object -Property length -Average).Average / 1GB
+$averageFile = ($files | Measure-Object -Property length -Average).Average / 1GB 
 Write-Host "Average File size is" $averageFile "GB"
-Write-Host ".................."
+Write-Host ""
+
+#Longest pathname
+$longPath = $files | Select-Object FullName | Sort length | select -first 1;
+Write-Host "Longest Path is" $longPath
+Write-Host ""
 
 #Date calculations
 
@@ -57,7 +62,7 @@ $Cdate6MonthsPlus = $files | Where-Object {$_.CreationTime -lt $date6Months } | 
 
 #Calculations for Creation Time each timeframe
 
-Write-Host "Created file info"
+Write-Host "Created file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $CtotalFiles
 Write-Host "Last week"(($CdateWeek1 / $CtotalFiles)*100) "%. Files:" $CdateWeek1
 Write-Host "Last Month"(($CdateMonths / $CtotalFiles)*100) "%. Files:" $CdateMonths
@@ -67,7 +72,7 @@ Write-Host "Older than 6 Months"(($Cdate6MonthsPlus / $CtotalFiles)*100) "%. Fil
 #Error check
 
 $check = ($CtotalFiles - ($CdateWeek1 + $CdateMonths + $Cdate6months1 + $Cdate6MonthsPlus))
-$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files"}
+$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files" }
 
 #Get the file count for Modified in each timeframe
 
@@ -79,8 +84,8 @@ $Mdate6MonthsPlus = $files | Where-Object {$_.LastWriteTime -lt $date6Months } |
 
 #Calculations for Modified in each timeframe
 
-Write-Host ".................."
-Write-Host "Modified file info"
+Write-Host ""
+Write-Host "Modified file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $MtotalFiles
 Write-Host "Last week"(($MdateWeek1 / $MtotalFiles)*100) "%. Files:" $MdateWeek1
 Write-Host "Last Month"(($MdateMonths / $MtotalFiles)*100) "%. Files:" $MdateMonths
@@ -90,7 +95,7 @@ Write-Host "Older than 6 Months"(($Mdate6MonthsPlus / $MtotalFiles)*100) "%. Fil
 #Error check
 
 $check = ($MtotalFiles - ($MdateWeek1 + $MdateMonths + $Mdate6months1 + $Mdate6MonthsPlus))
-$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files"}
+$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files" }
 
 
 
@@ -106,8 +111,8 @@ $Adate6MonthsPlus = $files | Where-Object {$_.LastAccessTime -lt $date6Months } 
 
 #Calculations for Last Access time in each timeframe
 
-Write-Host ".................."
-Write-Host "Access time file info"
+Write-Host ""
+Write-Host "Access time file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $AtotalFiles
 Write-Host "Last week"(($AdateWeek1 / $AtotalFiles)*100) "%. Files:" $AdateWeek1
 Write-Host "Last Month"(($AdateMonths / $AtotalFiles)*100) "%. Files:" $AdateMonths
@@ -117,7 +122,7 @@ Write-Host "Older than 6 Months"(($Adate6MonthsPlus / $AtotalFiles)*100) "%. Fil
 #Error check
 
 $check = ($AtotalFiles - ($AdateWeek1 + $AdateMonths + $Adate6months1 + $Adate6MonthsPlus))
-$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files"}
+$check2 = if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files" }
 
 
 Write-Host "All-Done"
