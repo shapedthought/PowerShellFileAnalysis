@@ -1,4 +1,4 @@
-﻿#calculates the percentage of files changed in the three time frames
+﻿#File Anaylsis toolkit- Ed Howard exfhoward@protonmail.com
 
 #Inital scan of file system
 
@@ -9,16 +9,11 @@ Write-Host "Pre-scan please wait...."
 $files = Get-ChildItem $dirLoc -File -Recurse
 
 $files | ForEach-Object {
-    Write-Progress -Activity "Scanning file $($_.name)" -Status "File $i of $($files.Count)" -PercentComplete (($i / $files.Count) * 100)
+    Write-Progress -Id 1 -Activity "Scanning file $($_.name)" -Status "File $i of $($files.Count)" -PercentComplete (($i / $files.Count) * 100) 
     $i++
 }
 
-Write-Host ""
-Write-Host ""
-Write-Host ""
-Write-Host ""
-Write-Host ""
-Write-Host ""
+Write-Progress -id 1 -Activity "File system scan" -Completed
 
 #Total used capacity
 
@@ -31,13 +26,13 @@ Write-Host ""
 
 $largestFile = ($files | Sort length -Descending | Select-Object -first 1).FullName
 $largestFileCap = ($files | Select-Object length | Sort length -Descending | select -first 1).length / 1GB
-Write-Host "Largest file is" $largestFile "at" $largestFileCap "GB"
+Write-Host "Largest file is" $largestFile "at" ("{0:N4} GB" -f $largestFileCap)
 Write-Host ""
 
 #Average file size
 
 $averageFile = ($files | Measure-Object -Property length -Average).Average / 1GB 
-Write-Host "Average File size is" $averageFile "GB"
+Write-Host "Average File size is" ("{0:N4} GB" -f $averageFile)
 Write-Host ""
 
 #Longest pathname
