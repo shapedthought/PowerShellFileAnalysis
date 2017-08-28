@@ -150,6 +150,9 @@ Write-Host ""
 Write-Host "Quantity of files by extension"
 $files | group Extension -NoElement | sort count -desc
 
+Write-Host ""
+Write-Host "Extenions by capacity"
+$files | group Extension -NoElement | sort length -desc
 
 Write-Host "All-Done"
 Start-Sleep 100
