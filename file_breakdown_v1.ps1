@@ -1,8 +1,11 @@
 ﻿#File Anaylsis toolkit- Ed Howard exfhoward@protonmail.com
 
 #Inital scan of file system
+Write-Host "This includes the capacity by extension however it is a bit messy at the moment, you will be given the"
+Write-Host "option to this this or not below"
 
 $dirLoc = Read-Host -Prompt "Enter the file system location"
+$CapByEx = Read-Host -Prompt "Do you want the extension breakdown? Y/N"
 $i = 1
 Write-Host "Pre-scan please wait...."
 
@@ -150,11 +153,16 @@ Write-Host ""
 Write-Host "Quantity of files by extension"
 $files | group Extension -NoElement | sort count -desc
 
+IF ($CapByEx -eq "Y") {
+
 #File extension capacity
 Write-Host ""
 Write-Host "Capacity by extension- beta"
-$files | Group-Object -Property extension | ForEach-Object { $name = $_.Name; $cap = ("{0:N2} GB " -f (((($_.group | Measure-Object Length -Sum).sum)/1GB))); write-host $name $cap }
+$files | Group-Object -Property extension | ForEach-Object { $name = $_.Name; $cap = ("{0:N2} GB " -f (((($_.group | Measure-Object Length -Sum).sum)/1GB))); write-host $name "," $cap }
 
+}
+Else
+{
 Write-Host "All-Done"
 Start-Sleep 100
-
+}
