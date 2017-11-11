@@ -8,10 +8,10 @@ Write-Host "Pre-scan please wait...."
 
 $files = Get-ChildItem $dirLoc -File -Recurse
 
-$files | ForEach-Object {
-    Write-Progress -Id 1 -Activity "Scanning file $($_.name)" -Status "File $i of $($files.Count)" -PercentComplete (($i / $files.Count) * 100) 
-    $i++
-}
+#$files | ForEach-Object {
+#    Write-Progress -Id 1 -Activity "Scanning file $($_.name)" -Status "File $i of $($files.Count)" -PercentComplete (($i / $files.Count) * 100) 
+#    $i++
+#}
 
 Write-Progress -id 1 -Activity "File system scan" -Completed
 
@@ -19,14 +19,14 @@ Write-Progress -id 1 -Activity "File system scan" -Completed
 
 $cap = ($files | Measure-Object -Sum length).sum / 1GB
 
-Write-Host "Total Used Capacity is" $cap "GB"
+Write-Host "Total Used Capacity is" ("{0:N4} GB" -f $cap)
 Write-Host ""
 
 #Largest file
 
 $largestFile = ($files | Sort length -Descending | Select-Object -first 1).FullName
 $largestFileCap = ($files | Select-Object length | Sort length -Descending | select -first 1).length / 1GB
-Write-Host "Largest file is" $largestFile "at" ("{0:N4} GB" -f $largestFileCap)
+Write-Host "Largest file is" $largestFile "at" ("{0:N2} GB" -f $largestFileCap)
 Write-Host ""
 
 #Average file size
