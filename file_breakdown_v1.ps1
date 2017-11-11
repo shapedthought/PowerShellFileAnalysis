@@ -150,11 +150,6 @@ Write-Host ""
 Write-Host "Quantity of files by extension"
 $files | group Extension -NoElement | sort count -desc
 
-#File extension capacity
-Write-Host ""
-Write-Host "Capacity by extension- beta"
-$files | Group-Object -Property extension | ForEach-Object { $name = $_.Name; $cap = ("{0:N2} GB " -f (((($_.group | Measure-Object Length -Sum).sum)/1GB))); write-host $name $cap }
-
 Write-Host "All-Done"
 Start-Sleep 100
 
