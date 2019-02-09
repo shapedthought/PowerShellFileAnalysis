@@ -35,6 +35,7 @@ Write-Host ""
 #Date calculations
 
 $date = Get-Date
+$dateDay = $date.AddHours(-24)
 $dateWeek = $date.AddDays(-7)
 $dateMonth = $date.AddMonths(-1)
 $date6months = $date.AddMonths(-6)
@@ -43,8 +44,11 @@ $date6months = $date.AddMonths(-6)
 
 $CtotalFiles = $files | Measure-Object | ForEach-Object{$_.Count}
 
-$CdateWeek1 = $files | Where-Object {$_.CreationTime -ge $dateWeek } | Measure-Object | ForEach-Object{$_.Count}
-$CdateWeek1Cap = ($files | Where-Object {$_.CreationTime -ge $dateWeek } | Measure-Object -Sum length).sum /1GB
+$CdateDay = $files | Where-Object {$_.CreationTime -ge $dateDay } | Measure-Object | ForEach-Object{$_.Count}
+$CdateDay1Cap = ($files | Where-Object {$_.CreationTime -ge $dateDay } | Measure-Object -Sum length).sum /1GB
+
+$CdateWeek1 = $files | Where-Object {$_.CreationTime -ge $dateWeek -and $_.CreationTime -lt $dateDay } | Measure-Object | ForEach-Object{$_.Count}
+$CdateWeek1Cap = ($files | Where-Object {$_.CreationTime -ge $dateWeek -and $_.CreationTime -lt $dateDay } | Measure-Object -Sum length).sum /1GB
 
 $CdateMonths = $files | Where-Object {$_.CreationTime -ge $dateMonth -and $_.CreationTime -lt $dateWeek } | Measure-Object | ForEach-Object{$_.Count}
 $CdateMonthsCap = ($files | Where-Object {$_.CreationTime -ge $dateMonth -and $_.CreationTime -lt $dateWeek } | Measure-Object -Sum length).sum / 1GB
@@ -60,6 +64,7 @@ $Cdate6MonthsPlusCap = ($files | Where-Object {$_.CreationTime -lt $date6Months 
 
 Write-Host "Created file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $CtotalFiles
+Write-Host "Lastd day"("{0:P2}" -f (($CdateDay / $CtotalFiles))) "Files:" $CdateDay "Capacity:" ("{0:N4} GB" -f $CdateDay1Cap) "Cap percetage" ("{0:P4}" -f ($CdateDay1Cap / $cap))
 Write-Host "Last week"("{0:P2}" -f (($CdateWeek1 / $CtotalFiles))) "Files:" $CdateWeek1 "Capacity:" ("{0:N4} GB" -f $CdateWeek1Cap) "Cap percetage" ("{0:P4}" -f ($CdateWeek1Cap / $cap))
 Write-Host "Last Month"("{0:P2}" -f (($CdateMonths / $CtotalFiles))) "Files:" $CdateMonths "Capacity:" ("{0:N4} GB" -f $CdateMonthsCap) "Cap percetage" ("{0:P4}" -f ($CdateMonthsCap / $cap))
 Write-Host "Last 6 Months"("{0:P2}" -f (($Cdate6Months1 / $CtotalFiles))) "Files:" $Cdate6months1 "Capacity:" ("{0:N4} GB" -f $Cdate6Months1Cap) "Cap percetage" ("{0:P4}" -f (($Cdate6Months1Cap / $cap)))
@@ -67,17 +72,20 @@ Write-Host "Older than 6 Months"("{0:P2}" -f ($Cdate6MonthsPlus / $CtotalFiles))
 
 #Error check
 
-$check = ($CtotalFiles - ($CdateWeek1 + $CdateMonths + $Cdate6months1 + $Cdate6MonthsPlus))
+$check = ($CtotalFiles - ($CdateDay + $CdateWeek1 + $CdateMonths + $Cdate6months1 + $Cdate6MonthsPlus))
 if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files" }
-$checkCap = ($cap - ($CdateWeek1Cap + $CdateMonthsCap + $Cdate6Months1Cap + $Cdate6MonthsPlusCap))
+$checkCap = ($cap - ($CdateDay1Cap + $CdateWeek1Cap + $CdateMonthsCap + $Cdate6Months1Cap + $Cdate6MonthsPlusCap))
 if ($checkCap -eq 0) { Write-Host "Cap check: All is good" } else { Write-Host "Cap Check: Error missing" $checkCap "GB" }
 
 #Get the file count for Modified in each timeframe
 
 $MtotalFiles = $files | Measure-Object | ForEach-Object{$_.Count}
 
-$MdateWeek1 = $files | Where-Object {$_.LastWriteTime -ge $dateWeek } | Measure-Object | ForEach-Object{$_.Count}
-$MdateWeek1Cap = ($files | Where-Object {$_.LastWriteTime -ge $dateWeek } | Measure-Object -Sum length).sum /1GB
+$MdateDay = $files | Where-Object {$_.LastWriteTime -ge $dateDay } | Measure-Object | ForEach-Object{$_.Count}
+$MdateDayCap = ($files | Where-Object {$_.LastWriteTime -ge $dateDay } | Measure-Object -Sum length).sum /1GB
+
+$MdateWeek1 = $files | Where-Object {$_.LastWriteTime -ge $dateWeek -and $_.LastWriteTime -lt $dateDay} | Measure-Object | ForEach-Object{$_.Count}
+$MdateWeek1Cap = ($files | Where-Object {$_.LastWriteTime -ge $dateWeek -and $_.LastWriteTime -lt $dateDay } | Measure-Object -Sum length).sum /1GB
 
 $MdateMonths = $files | Where-Object {$_.LastWriteTime -ge $dateMonth -and $_.LastWriteTime -lt $dateWeek } | Measure-Object | ForEach-Object{$_.Count}
 $MdateMonthsCap = ($files | Where-Object {$_.LastWriteTime -ge $dateMonth -and $_.CreationTime -lt $dateWeek } | Measure-Object -Sum length).sum / 1GB
@@ -93,6 +101,7 @@ $Mdate6MonthsPlusCap = ($files | Where-Object {$_.LastWriteTime -lt $date6Months
 Write-Host ""
 Write-Host "Modified file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $MtotalFiles
+Write-Host "Last Day"("{0:P2}" -f ($MdateDay / $MtotalFiles)) "Files:" $MdateDay "Capacity:" ("{0:N4} GB" -f $MdateDayCap) "Cap percetage" ("{0:P4}" -f ($MdateDayCap / $cap))
 Write-Host "Last week"("{0:P2}" -f ($MdateWeek1 / $MtotalFiles)) "Files:" $MdateWeek1 "Capacity:" ("{0:N4} GB" -f $MdateWeek1Cap) "Cap percetage" ("{0:P4}" -f ($MdateWeek1Cap / $cap))
 Write-Host "Last Month"("{0:P2}" -f ($MdateMonths / $MtotalFiles)) "Files:" $MdateMonths "Capacity:" ("{0:N4} GB" -f $MdateMonthsCap) "Cap percetage" ("{0:P4}" -f ($MdateMonthsCap / $cap))
 Write-Host "Last 6 Months"("{0:P2}" -f ($Mdate6Months1 / $MtotalFiles)) " Files:" $Mdate6months1 "Capacity:" ("{0:N4} GB" -f $Mdate6Months1Cap) "Cap percetage" ("{0:P4}" -f (($Mdate6Months1Cap / $cap)))
@@ -111,6 +120,9 @@ if ($checkCap -eq 0) { Write-Host "Cap check: All is good" } else { Write-Host "
 
 $AtotalFiles = $files | Measure-Object | ForEach-Object{$_.Count}
 
+$AdateDay1 = $files | Where-Object {$_.LastAccessTime -ge $dateDay } | Measure-Object | ForEach-Object{$_.Count}
+$AdateDay1Cap = ($files | Where-Object {$_.LastAccessTime -ge $dateDay } | Measure-Object -Sum length).sum /1GB
+
 $AdateWeek1 = $files | Where-Object {$_.LastAccessTime -ge $dateWeek } | Measure-Object | ForEach-Object{$_.Count}
 $AdateWeek1Cap = ($files | Where-Object {$_.LastAccessTime -ge $dateWeek } | Measure-Object -Sum length).sum /1GB
 
@@ -128,6 +140,7 @@ $Adate6MonthsPlusCap = ($files | Where-Object {$_.LastAccessTime -lt $date6Month
 Write-Host ""
 Write-Host "Access time file info" -ForegroundColor Cyan
 Write-Host "Total Files:" $AtotalFiles
+Write-Host "Last week"("{0:P2}" -f ($AdateDay1 / $AtotalFiles)) "Files:" $AdateDay1 "Capacity:" ("{0:N4} GB" -f $AdateDay1Cap) "Cap percetage" ("{0:P4}" -f ($AdateDay1Cap / $cap))
 Write-Host "Last week"("{0:P2}" -f ($AdateWeek1 / $AtotalFiles)) "Files:" $AdateWeek1 "Capacity:" ("{0:N4} GB" -f $AdateWeek1Cap) "Cap percetage" ("{0:P4}" -f ($AdateWeek1Cap / $cap))
 Write-Host "Last Month"("{0:P2}" -f ($AdateMonths / $AtotalFiles)) "Files:" $AdateMonths "Capacity:" ("{0:N4} GB" -f $AdateMonthsCap) "Cap percetage" ("{0:P4}" -f ($AdateMonthsCap / $cap))
 Write-Host "Last 6 Months"("{0:P2}" -f ($Adate6Months1 / $AtotalFiles)) "Files:" $Adate6months1 "Capacity:" ("{0:N4} GB" -f $Adate6Months1Cap) "Cap percetage" ("{0:P4}" -f (($Adate6Months1Cap / $cap)))
@@ -135,16 +148,15 @@ Write-Host "Older than 6 Months"("{0:P2}" -f ($Adate6MonthsPlus / $AtotalFiles))
 
 #Error check
 
-$check = ($AtotalFiles - ($AdateWeek1 + $AdateMonths + $Adate6months1 + $Adate6MonthsPlus))
+$check = ($AtotalFiles - ($AdateDay1 + $AdateWeek1 + $AdateMonths + $Adate6months1 + $Adate6MonthsPlus))
 if ($check -eq 0) { Write-Host "Error Check: All is good" } else { Write-Host "Error Check: ERROR missing" $check "files" }
-$checkCap = ($cap - ($AdateWeek1Cap + $AdateMonthsCap + $Adate6Months1Cap + $Adate6MonthsPlusCap))
+$checkCap = ($cap - ($AdateDay1Cap + $AdateWeek1Cap + $AdateMonthsCap + $Adate6Months1Cap + $Adate6MonthsPlusCap))
 if ($checkCap -eq 0) { Write-Host "Cap check: All is good" } else { Write-Host "Cap Check: Error missing" $checkCap "GB" }
 
 #File Breakdown
 Write-Host ""
 Write-Host "Quantity of files by extension"
 $files | Group-Object Extension -NoElement | Sort-Object count -desc
-
 Write-Host "All-Done"
 Start-Sleep 100
 
