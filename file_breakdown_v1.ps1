@@ -3,9 +3,9 @@
 #Inital scan of file system
 
 $dirLoc = Read-Host -Prompt "Enter the file system location"
-Write-Host "Pre-scan please wait...."
+Write-Host "Scanning please wait...."
 
-$files = Get-ChildItem $dirLoc -File -Recurse
+$files = Get-ChildItem $dirLoc -File -Recurse 
 
 #Total used capacity
 
